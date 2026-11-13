@@ -1,0 +1,131 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct node {
+    char name[20];
+    int addr;
+    struct node *next;
+} *head = NULL;
+
+int A = 1000;
+
+struct node *find(char n[]) {
+    struct node *p = head;
+    while (p && strcmp(p->name, n))
+        p = p->next;
+    return p;
+}
+
+void insert() {
+    char n[20];
+    printf("Enter symbol: ");
+    scanf("%19s", n);
+
+    if (find(n)) {
+        printf("Symbol already exists\n");
+        return;
+    }
+
+    struct node *p = malloc(sizeof(struct node));
+    if (!p) return;
+
+    strcpy(p->name, n);
+    p->addr = A;
+    A += 2;
+    p->next = head;
+    head = p;
+    printf("Inserted successfully\n");
+}
+
+void display() {
+    struct node *p = head;
+    printf("\nSymbol\tAddress\n");
+    while (p) {
+        printf("%s\t%d\n", p->name, p->addr);
+        p = p->next;
+    }
+}
+
+void modify() {
+    char a[20], b[20];
+    printf("Enter old symbol: ");
+    scanf("%19s", a);
+
+    struct node *p = find(a);
+    if (!p) {
+        printf("Symbol not found\n");
+        return;
+    }
+
+    printf("Enter new symbol: ");
+    scanf("%19s", b);
+
+    if (find(b)) {
+        printf("Symbol already exists\n");
+        return;
+    }
+
+    strcpy(p->name, b);
+    printf("Modified successfully\n");
+}
+
+void delete() {
+    char n[20];
+    struct node *p = head, *q = NULL;
+
+    printf("Enter symbol to delete: ");
+    scanf("%19s", n);
+
+    while (p && strcmp(p->name, n)) {
+        q = p;
+        p = p->next;
+    }
+
+    if (!p) {
+        printf("Symbol not found\n");
+        return;
+    }
+
+    if (q) q->next = p->next;
+    else head = p->next;
+
+    free(p);
+    printf("Deleted successfully\n");
+}
+
+int main() {
+    int ch;
+    char n[20];
+
+    do {
+        printf("\n1.Insert 2.Display 3.Search");
+        printf("\n4.Modify 5.Delete 6.Exit");
+        printf("\nEnter choice: ");
+        scanf("%d", &ch);
+
+        switch (ch) {
+            case 1: insert(); break;
+            case 2: display(); break;
+            case 3:
+                printf("Enter symbol to search: ");
+                scanf("%19s", n);
+                printf("%s\n", find(n) ?
+                    "Symbol found" : "Symbol not found");
+                break;
+            case 4: modify(); break;
+            case 5: delete(); break;
+            case 6: printf("Exiting\n"); break;
+            default: printf("Invalid choice\n");
+        }
+    } while (ch != 6);
+
+    while (head) {
+        struct node *p = head;
+        head = head->next;
+        free(p);
+    }
+
+    return 0;
+}
